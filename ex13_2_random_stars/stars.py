@@ -2,6 +2,7 @@ import pygame
 import sys
 from settings import Settings
 from star_class import Star
+from random import randint
 
 class Stars:
     '''星星类'''
@@ -49,10 +50,15 @@ class Stars:
     def _create_single_star(self, x_position, y_position):
         '''在这里改变每一个星星的坐标'''
         new_star = Star(self)
-        new_star.x = x_position
+        new_star.x = x_position + self._random_change()
         new_star.rect.x = new_star.x
-        new_star.rect.y = y_position
+        new_star.rect.y = y_position + self._random_change()
         self.stars.add(new_star)
+
+    def _random_change(self):
+        '''返回一个随机量, 使星星偏移'''
+        upset = 15
+        return randint(-1*upset, upset)
 
 if __name__ == '__main__':
     st_game = Stars()

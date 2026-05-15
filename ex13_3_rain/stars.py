@@ -23,13 +23,17 @@ class Stars:
         '''游戏主循环'''
         while True:
             self.screen.fill(self.settings.bg_color)
+            self._update_rains()
             self.stars.draw(self.screen)
-            pygame.display.flip()
-            
-            for event in pygame.event.get():
+            pygame.display.flip()          
+            self._check_events()
+            self.clock.tick(60)
+
+    def _check_events(self):
+        '''监测事件'''
+        for event in pygame.event.get():
                 if event.type == pygame.QUIT:
                     sys.exit()
-            self.clock.tick(60)
 
     def _create_stars(self):
         '''创建所有星星, 其实就是在这里的循环中不断改变星星坐标'''
@@ -49,10 +53,14 @@ class Stars:
     def _create_single_star(self, x_position, y_position):
         '''在这里改变每一个星星的坐标'''
         new_star = Star(self)
-        new_star.x = x_position
-        new_star.rect.x = new_star.x
-        new_star.rect.y = y_position
+        new_star.y = y_position
+        new_star.rect.y = new_star.y
+        new_star.rect.x = x_position
         self.stars.add(new_star)
+
+    def _update_rains(self):
+        '''更新雨滴的坐标'''
+        self.stars.update()
 
 if __name__ == '__main__':
     st_game = Stars()

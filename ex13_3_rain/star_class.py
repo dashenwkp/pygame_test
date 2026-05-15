@@ -10,6 +10,12 @@ class Star(Sprite):
         self.rect = self.image.get_rect()
         self.rect.x = self.rect.width
         self.rect.y = self.rect.height
+        self.settings = st_game.settings
 
         # 存储水平位置的精确坐标
-        self.x = float(self.rect.x)
+        self.y = float(self.rect.y)
+
+    def update(self):
+        '''增大雨滴的y坐标'''
+        self.y += self.settings.rain_speed
+        self.rect.y = self.y

@@ -24,6 +24,16 @@ class Rocket:
         self.moving_up = False
         self.moving_down = False
 
+    def update(self):
+        '''根据移动标志调整飞船的位置'''
+        if self.moving_up and self.rect.top > 0:
+            self.y -= self.settings.rocket_speed
+        if self.moving_down and self.rect.bottom < self.screen_rect.bottom:
+            self.y += self.settings.rocket_speed
+
+        # 根据self.y更新rect对象
+        self.rect.y = self.y
+
     def blitme(self):
         '''在指定位置绘制飞船'''
         self.screen.blit(self.image, self.rect)

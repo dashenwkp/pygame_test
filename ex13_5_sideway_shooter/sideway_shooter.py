@@ -21,6 +21,7 @@ class SidewayShooter:
         '''游戏主循环'''
         while True:
             self._check_events()
+            self.rocket.update()
             self.screen.fill(self.settings.bg_color)
             self.rocket.blitme()
             pygame.display.flip()
@@ -32,8 +33,25 @@ class SidewayShooter:
             if event.type == pygame.QUIT:
                 sys.exit()
             elif event.type == pygame.KEYDOWN:
-                if event.key == pygame.K_q:
-                    sys.exit()
+                self._check_keydown_events(event)
+            elif event.type == pygame.KEYUP:
+                self._check_keyup_events(event)
+
+    def _check_keydown_events(self, event):
+        '''响应按键'''
+        if event.key == pygame.K_UP:
+            self.rocket.moving_up = True
+        elif event.key == pygame.K_DOWN:
+            self.rocket.moving_down = True
+        elif event.key == pygame.K_q:
+            sys.exit()
+
+    def _check_keyup_events(self, event):
+        '''响应松开'''
+        if event.key == pygame.K_UP:
+            self.rocket.moving_up = False
+        elif event.key == pygame.K_DOWN:
+            self.rocket.moving_down = False
 
 if __name__ == '__main__':
     # 创建游戏实例并运行游戏

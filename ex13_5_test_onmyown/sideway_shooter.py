@@ -2,6 +2,7 @@ import pygame
 import sys
 from settings import Settings
 from rocket import Rocket
+from bullet import Bullet
 
 class SidewayShooter:
     '''管理游戏资源和行为的类'''
@@ -15,14 +16,15 @@ class SidewayShooter:
         self.settings.screen_height = self.screen.get_rect().height
         pygame.display.set_caption('Sideway Shooter')
         self.rocket = Rocket(self)
+        self.bullets = pygame.sprite.Group()
         self.clock = pygame.time.Clock()
 
     def run_game(self):
         '''游戏主循环'''
         while True:
-            self._update_screen()
             self._check_event()
             self.rocket.update()
+            self._update_screen()
             self.clock.tick(60)
 
     def _check_event(self):

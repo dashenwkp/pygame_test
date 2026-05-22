@@ -3,6 +3,8 @@ import sys
 from settings import Settings
 from rocket import Rocket
 from bullet import Bullet
+from alien import Alien
+from random import random
 
 class SidewayShooter:
     '''管理游戏资源和行为的类'''
@@ -17,14 +19,17 @@ class SidewayShooter:
         pygame.display.set_caption('Sideway Shooter')
         self.rocket = Rocket(self)
         self.bullets = pygame.sprite.Group()
+        self.aliens = pygame.sprite.Group()
         self.clock = pygame.time.Clock()
 
     def run_game(self):
         '''游戏主循环'''
         while True:
             self._check_event()
+            self._create_alien()
             self.rocket.update()
             self._update_bullet()
+            self.aliens.update()
             self._update_screen()
             self.clock.tick(60)
 
@@ -70,6 +75,12 @@ class SidewayShooter:
             if bullet.rect.left > self.screen.get_rect().right:
                 self.bullets.remove(bullet)
 
+    def _create_alien(self):
+        '''满足条件时创建外星人实例, 并加入到编组中'''
+        if random() < self.settings.alien_frequency:
+            new_alien = Alien(self)
+            self.aliens.add(new_alien)
+
     def _update_screen(self):
         '''更新屏幕'''
         self.screen.fill(self.settings.bg_color)
@@ -78,6 +89,9 @@ class SidewayShooter:
         # 绘制每一颗子弹
         for bullet in self.bullets.sprites():
             bullet.draw_bullet()
+
+        # 绘制外星人
+        self.aliens.draw(self.screen)
         
         pygame.display.flip()
 

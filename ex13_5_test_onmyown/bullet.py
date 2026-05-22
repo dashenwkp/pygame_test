@@ -15,7 +15,7 @@ class Bullet(Sprite):
         self.rect.midright = ss_game.rocket.rect.midright
 
         # 存储精确的x坐标
-        self.x = self.rect.x
+        self.x = float(self.rect.x)
 
     def update(self):
         '''更新子弹的位置'''

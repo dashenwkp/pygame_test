@@ -17,3 +17,8 @@ class Settings:
         self.bullet_height = 3
         self.bullet_color = (60, 60, 60)
         self.bullets_allowed = 3
+
+        # 外星人设置
+        # alien_frequency越大, 外星人生成的频率越高
+        self.alien_speed = 1.5
+        self.alien_frequency = 0.008

@@ -75,6 +75,13 @@ class SidewayShooter:
             if bullet.rect.left > self.screen.get_rect().right:
                 self.bullets.remove(bullet)
 
+        self._check_bullet_alien_collisions()
+
+    def _check_bullet_alien_collisions(self):
+        '''检测子弹和外星人的碰撞'''
+        collisions = pygame.sprite.groupcollide(
+            self.bullets, self.aliens, True, True)
+
     def _create_alien(self):
         '''满足条件时创建外星人实例, 并加入到编组中'''
         if random() < self.settings.alien_frequency:

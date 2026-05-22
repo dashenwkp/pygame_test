@@ -24,6 +24,7 @@ class SidewayShooter:
         while True:
             self._check_event()
             self.rocket.update()
+            self._update_bullet()
             self._update_screen()
             self.clock.tick(60)
 
@@ -43,6 +44,8 @@ class SidewayShooter:
             self.rocket.moving_up = True
         elif event.key == pygame.K_DOWN:
             self.rocket.moving_down = True
+        elif event.key == pygame.K_SPACE:
+            self._fire_bullet()
         elif event.key == pygame.K_q:
             sys.exit()
 
@@ -53,10 +56,28 @@ class SidewayShooter:
         elif event.key == pygame.K_DOWN:
             self.rocket.moving_down = False
 
+    def _fire_bullet(self):
+        '''在不超过限制的情况下, 创建一颗子弹, 并将其加入编组中'''
+        if len(self.bullets) < self.settings.bullets_allowed:
+            new_bullet = Bullet(self)
+            self.bullets.add(new_bullet)
+
+    def _update_bullet(self):
+        '''更新子弹的位置, 并删除飞出屏幕外面的子弹'''
+        self.bullets.update()
+
+        for bullet in self.bullets.copy():
+            if bullet.rect.left > self.screen.get_rect().right:
+                self.bullets.remove(bullet)
+
     def _update_screen(self):
         '''更新屏幕'''
         self.screen.fill(self.settings.bg_color)
         self.rocket.blitme()
+
+        # 绘制每一颗子弹
+        for bullet in self.bullets.sprites():
+            bullet.draw_bullet()
         
         pygame.display.flip()
 

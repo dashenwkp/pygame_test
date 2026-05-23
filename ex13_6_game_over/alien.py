@@ -9,7 +9,7 @@ class Alien(Sprite):
         '''加载图像, 并设置外星人的初始位置'''
         super().__init__()
         self.image = pygame.image.load(
-            r'ex13_5_test_onmyown\images\alien_ship.png')
+            r'ex13_6_game_over\images\alien_ship.png')
         self.rect = self.image.get_rect()
         self.screen = ss_game.screen
         self.settings = ss_game.settings

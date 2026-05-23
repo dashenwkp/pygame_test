@@ -7,7 +7,7 @@ class Rocket:
     def __init__(self, ss_game):
         '''加载火箭并将火箭放到屏幕左边的中间'''
         self.screen = ss_game.screen
-        self.settings = Settings()
+        self.settings = ss_game.settings
         self.image = pygame.image.load(
             r'ex13_6_game_over\images\rocket_small.png')
         self.rect = self.image.get_rect()

@@ -15,7 +15,7 @@ class Rocket:
         self.rect.midleft = self.screen_rect.midleft
 
         # 存储精确的火箭y坐标
-        self.y = self.rect.y
+        self.y = float(self.rect.y)
 
         # 设置移动标志
         self.moving_up = False
@@ -33,3 +33,8 @@ class Rocket:
     def blitme(self):
         '''绘制火箭'''
         self.screen.blit(self.image, self.rect)
+
+    def rocket_center(self):
+        '''将火箭重新居中'''
+        self.rect.midleft = self.screen_rect.midleft
+        self.y = float(self.rect.y)

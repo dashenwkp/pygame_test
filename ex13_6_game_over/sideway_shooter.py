@@ -5,6 +5,8 @@ from rocket import Rocket
 from bullet import Bullet
 from alien import Alien
 from random import random
+from time import sleep
+from game_stats import GameStats
 
 class SidewayShooter:
     '''管理游戏资源和行为的类'''
@@ -17,19 +19,24 @@ class SidewayShooter:
         self.settings.screen_width = self.screen.get_rect().width
         self.settings.screen_height = self.screen.get_rect().height
         pygame.display.set_caption('Sideway Shooter')
+        self.stats = GameStats(self)
         self.rocket = Rocket(self)
         self.bullets = pygame.sprite.Group()
         self.aliens = pygame.sprite.Group()
         self.clock = pygame.time.Clock()
 
+        # 表示游戏运行的值
+        self.game_active = True
+
     def run_game(self):
         '''游戏主循环'''
         while True:
             self._check_event()
-            self._create_alien()
-            self.rocket.update()
-            self._update_bullet()
-            self.aliens.update()
+            if self.game_active:
+                self._create_alien()
+                self.rocket.update()
+                self._update_bullet()
+                self._update_aliens()
             self._update_screen()
             self.clock.tick(60)
 
@@ -76,6 +83,36 @@ class SidewayShooter:
                 self.bullets.remove(bullet)
 
         self._check_bullet_alien_collisions()
+
+    def _update_aliens(self):
+        '''更新外星人的位置'''
+        self.aliens.update()
+
+        # 检测外星人和火箭的碰撞
+        if pygame.sprite.spritecollideany(self.rocket, self.aliens):
+            self._rocket_hit()
+
+        # 检测外星人是否到达屏幕左边缘
+        self._aliens_bottom()
+
+    def _rocket_hit(self):
+        '''火箭被撞后'''
+        if self.stats.rockets_left > 0:
+            self.stats.rockets_left -= 1
+            self.bullets.empty()
+            self.aliens.empty()
+            sleep(0.5)
+            self._create_alien()
+            self.rocket.rocket_center()
+        else:
+            self.game_active = False
+
+    def _aliens_bottom(self):
+        '''检测外星人是否到达屏幕左边缘'''
+        for alien in self.aliens.sprites():
+            if alien.rect.left <= 0:
+                self._rocket_hit()
+                break
 
     def _check_bullet_alien_collisions(self):
         '''检测子弹和外星人的碰撞'''

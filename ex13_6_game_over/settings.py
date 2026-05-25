@@ -9,9 +9,9 @@ class Settings:
 
         # 火箭设置
         self.rocket_speed = 10.0
+        self.rocket_limit = 3
 
         # 子弹设置
-        # Bullet settings
         self.bullet_speed = 15.0
         self.bullet_width = 15
         self.bullet_height = 3
@@ -20,5 +20,5 @@ class Settings:
 
         # 外星人设置
         # alien_frequency越大, 外星人生成的频率越高
-        self.alien_speed = 1.5
+        self.alien_speed = 10.0
         self.alien_frequency = 0.01

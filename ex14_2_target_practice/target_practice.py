@@ -4,6 +4,7 @@ from pygame.time import Clock
 import sys
 from ship import Ship
 from bullet import Bullet
+from target import Target
 
 class TargetPractice:
     '''游戏《射击练习》的总类'''
@@ -19,6 +20,7 @@ class TargetPractice:
 
         self.ship = Ship(self)
         self.bullets = pygame.sprite.Group()
+        self.target = Target(self)
 
         self.clock = Clock()
 
@@ -28,6 +30,7 @@ class TargetPractice:
             self._check_events()
             self.ship.update()
             self._update_bullets()
+            self.target.update()
             self._update_screen()
             self.clock.tick(60)
 
@@ -78,6 +81,7 @@ class TargetPractice:
         self.ship.blitme()
         for bullet in self.bullets:
             bullet.draw_bullet()
+        self.target.draw_target()
         pygame.display.flip()
 
 if __name__ == '__main__':

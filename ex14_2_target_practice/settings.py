@@ -17,3 +17,9 @@ class Settings:
         self.bullet_height = 3
         self.bullet_color = (60, 60, 60)
         self.bullets_allowed = 3
+
+        # 靶子设置
+        self.target_height = 120
+        self.target_width = 15
+        self.target_color = (180, 60, 10)
+        self.target_speed = 1.5

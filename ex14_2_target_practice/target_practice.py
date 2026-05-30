@@ -5,6 +5,8 @@ import sys
 from ship import Ship
 from bullet import Bullet
 from target import Target
+from stats import Stats
+from button import Button
 
 class TargetPractice:
     '''游戏《射击练习》的总类'''
@@ -13,24 +15,28 @@ class TargetPractice:
         '''初始化游戏，创建游戏资源'''
         pygame.init()
         self.settings = Settings()
+        self.stats = Stats()
         self.screen = pygame.display.set_mode((0, 0), pygame.FULLSCREEN)
         self.settings.screen_width = self.screen.get_rect().width
         self.settings.screen_height = self.screen.get_rect().height
-        pygame.display.set_caption('Target Pratice')
+        pygame.display.set_caption('Target Practice')
 
         self.ship = Ship(self)
         self.bullets = pygame.sprite.Group()
         self.target = Target(self)
+        self.button = Button(self, 'Play')
 
         self.clock = Clock()
+        self.game_active = False
 
     def run_game(self):
         '''游戏主循环'''
         while True:
             self._check_events()
-            self.ship.update()
-            self._update_bullets()
-            self.target.update()
+            if self.game_active:
+                self.ship.update()
+                self._update_bullets()
+                self.target.update()
             self._update_screen()
             self.clock.tick(60)
 
@@ -43,6 +49,24 @@ class TargetPractice:
                 self._check_key_down(event)
             elif event.type == pygame.KEYUP:
                 self._check_key_up(event)
+            elif event.type == pygame.MOUSEBUTTONDOWN:
+                mouse_pos = pygame.mouse.get_pos()
+                self._check_play_button(mouse_pos)
+
+    def _check_play_button(self, pos):
+        '''检测是否点击了按钮'''
+        clicked = self.button.rect.collidepoint(pos)
+        if clicked and not self.game_active:
+            self._start_game()
+
+    def _start_game(self):
+        '''开始新游戏'''
+        self.stats.reset_stats()
+        self.game_active = True
+        self.bullets.empty()
+        self.ship.center_ship()
+        self.target.center_target()
+        pygame.mouse.set_visible(False)
 
     def _check_key_down(self, event):
         '''检测按键按下'''
@@ -69,11 +93,21 @@ class TargetPractice:
             self.bullets.add(bullet)
 
     def _update_bullets(self):
-        '''更新子弹，并删除超出屏幕的子弹'''
+        '''更新子弹，检测碰撞并删除超出屏幕的子弹，增加miss_shooter'''
         self.bullets.update()
         for bullet in self.bullets.copy():
             if bullet.rect.left > self.settings.screen_width:
                 self.bullets.remove(bullet)
+                self._increment_miss()
+        collision = pygame.sprite.spritecollide(
+            self.target, self.bullets, True)
+
+    def _increment_miss(self):
+        '''增加没击中的子弹数量'''
+        self.stats.miss_shooter += 1
+        if self.stats.miss_shooter >= self.settings.miss_limit:
+            self.game_active = False
+            pygame.mouse.set_visible(True)
 
     def _update_screen(self):
         '''更新屏幕'''
@@ -82,6 +116,8 @@ class TargetPractice:
         for bullet in self.bullets:
             bullet.draw_bullet()
         self.target.draw_target()
+        if not self.game_active:
+            self.button.draw_button()
         pygame.display.flip()
 
 if __name__ == '__main__':

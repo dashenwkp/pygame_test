@@ -10,13 +10,18 @@ class Target:
         self.screen_rect = self.screen.get_rect()
         self.rect = pygame.Rect(
             0, 0, self.settings.target_width, self.settings.target_height)
+        self.center_target()
+
+        # 移动方向为1时向下移动，为2时向上移动
+        self.direction = 1
+
+    def center_target(self):
+        '''居中靶子'''
         self.rect.midright = self.screen.get_rect().midright
 
         # 存储精确的y坐标
         self.y = float(self.rect.y)
 
-        # 移动方向为1时向下移动，为2时向上移动
-        self.direction = 1
 
     def update(self):
         '''上下移动靶子'''

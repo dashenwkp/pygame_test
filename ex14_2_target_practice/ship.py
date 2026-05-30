@@ -11,12 +11,15 @@ class Ship:
         self.image = pygame.image.load(
             r'ex14_2_target_practice\images\rocket.png')
         self.rect = self.image.get_rect()
-        self.rect.midleft = self.screen_rect.midleft
+        self.center_ship()
 
         # 移动标志
         self.moving_up = False
         self.moving_down = False
 
+    def center_ship(self):
+        '''居中飞船'''
+        self.rect.midleft = self.screen_rect.midleft
         # 存储精确的y坐标
         self.y = float(self.rect.y)
 

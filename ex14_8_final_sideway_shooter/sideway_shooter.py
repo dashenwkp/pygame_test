@@ -7,6 +7,7 @@ from alien import Alien
 from random import random
 from time import sleep
 from game_stats import GameStats
+from button import Button
 
 class SidewayShooter:
     '''管理游戏资源和行为的类'''
@@ -26,7 +27,9 @@ class SidewayShooter:
         self.clock = pygame.time.Clock()
 
         # 表示游戏运行的值
-        self.game_active = True
+        self.game_active = False
+
+        self.play_button = Button(self, 'Play')
 
     def run_game(self):
         '''游戏主循环'''
@@ -136,6 +139,10 @@ class SidewayShooter:
 
         # 绘制外星人
         self.aliens.draw(self.screen)
+
+        # 如果游戏处于非活动状态，就绘制play按钮
+        if not self.game_active:
+            self.play_button.draw_button()
         
         pygame.display.flip()
 

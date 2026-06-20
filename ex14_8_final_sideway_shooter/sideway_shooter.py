@@ -52,6 +52,31 @@ class SidewayShooter:
                 self._check_key_down(event)
             elif event.type == pygame.KEYUP:
                 self._check_key_up(event)
+            elif event.type == pygame.MOUSEBUTTONDOWN:
+                mouse_pos = pygame.mouse.get_pos()
+                self._check_play_button(mouse_pos)
+
+    def _check_play_button(self, mouse_pos):
+        '''单击play按钮时开始新游戏'''
+        button_clicked = self.play_button.rect.collidepoint(mouse_pos)
+        if button_clicked and not self.game_active:
+            self._start_game()
+
+    def _start_game(self):
+        '''开始新游戏'''
+        # 重置游戏的统计信息
+        self.stats.reset_stats()
+        self.game_active = True
+
+        # 删除子弹和外星人
+        self.bullets.empty()
+        self.aliens.empty()
+
+        # 使飞船居中
+        self.rocket.rocket_center()
+
+        # 隐藏光标
+        pygame.mouse.set_visible(False)
 
     def _check_key_down(self, event):
         '''监测键盘按下'''
@@ -63,6 +88,8 @@ class SidewayShooter:
             self._fire_bullet()
         elif event.key == pygame.K_q:
             sys.exit()
+        elif event.key == pygame.K_p:
+            self._start_game()
 
     def _check_key_up(self, event):
         '''监测键盘松开'''
@@ -109,6 +136,7 @@ class SidewayShooter:
             self.rocket.rocket_center()
         else:
             self.game_active = False
+            pygame.mouse.set_visible(True)
 
     def _aliens_bottom(self):
         '''检测外星人是否到达屏幕左边缘'''

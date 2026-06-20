@@ -31,15 +31,20 @@ class SidewayShooter:
 
         self.play_button = Button(self, 'Play')
 
+        # 制作用于调整游戏初始难度的按钮
+        self._make_difficulty_button()
+
     def run_game(self):
         '''游戏主循环'''
         while True:
             self._check_event()
+
             if self.game_active:
                 self._create_alien()
                 self.rocket.update()
                 self._update_bullet()
                 self._update_aliens()
+
             self._update_screen()
             self.clock.tick(60)
 
@@ -55,15 +60,51 @@ class SidewayShooter:
             elif event.type == pygame.MOUSEBUTTONDOWN:
                 mouse_pos = pygame.mouse.get_pos()
                 self._check_play_button(mouse_pos)
+                self._check_difficulty_buttons(mouse_pos)
+    
+    def _make_difficulty_button(self):
+        '''制作不同难度的按钮'''
+        self.easy_button = Button(self, 'Easy')
+        self.medium_button = Button(self, 'Medium')
+        self.hard_button = Button(self, 'Hard')
+
+        # 设置它们的rect，使每个按钮的间距为一个按钮的高度的一半
+        self.easy_button.rect.top = (
+            self.play_button.rect.top + self.play_button.rect.height * 1.5)
+        self.easy_button.update_msg_pos()
+
+        self.medium_button.rect.top = (
+            self.easy_button.rect.top + self.play_button.rect.height * 1.5)
+        self.medium_button.update_msg_pos()
+
+        self.hard_button.rect.top = (
+            self.medium_button.rect.top + self.play_button.rect.height * 1.5)
+        self.hard_button.update_msg_pos()
 
     def _check_play_button(self, mouse_pos):
-        '''单击play按钮时开始新游戏'''
+        '''在单击play按钮时开始新游戏'''
         button_clicked = self.play_button.rect.collidepoint(mouse_pos)
         if button_clicked and not self.game_active:
             self._start_game()
 
+    def _check_difficulty_buttons(self, mouse_pos):
+        '''调整游戏难度'''
+        easy_clicked = self.easy_button.rect.collidepoint(mouse_pos)
+        medium_clicked = self.medium_button.rect.collidepoint(mouse_pos)
+        hard_clicked = self.hard_button.rect.collidepoint(mouse_pos)
+
+        if easy_clicked and not self.game_active:
+            self.settings.difficulty = 'easy'
+        elif medium_clicked and not self.game_active:
+            self.settings.difficulty = 'medium'
+        elif hard_clicked and not self.game_active:
+            self.settings.difficulty = 'hard'
+
     def _start_game(self):
         '''开始新游戏'''
+        # 调整游戏设置
+        self.settings.initialize_dynamic_settings()
+
         # 重置游戏的统计信息
         self.stats.reset_stats()
         self.game_active = True
@@ -126,7 +167,7 @@ class SidewayShooter:
         self._aliens_bottom()
 
     def _rocket_hit(self):
-        '''火箭被撞后'''
+        '''火箭被撞后，如果还有剩余火箭，继续游戏，如果没有了就停止游戏'''
         if self.stats.rockets_left > 0:
             self.stats.rockets_left -= 1
             self.bullets.empty()
@@ -176,9 +217,12 @@ class SidewayShooter:
         # 绘制外星人
         self.aliens.draw(self.screen)
 
-        # 如果游戏处于非活动状态，就绘制play按钮
+        # 如果游戏处于非活动状态，就绘制play按钮和难度按钮
         if not self.game_active:
             self.play_button.draw_button()
+            self.easy_button.draw_button()
+            self.medium_button.draw_button()
+            self.hard_button.draw_button()
         
         pygame.display.flip()
 

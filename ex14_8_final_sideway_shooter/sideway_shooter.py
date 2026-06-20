@@ -149,6 +149,14 @@ class SidewayShooter:
         '''检测子弹和外星人的碰撞'''
         collisions = pygame.sprite.groupcollide(
             self.bullets, self.aliens, True, True)
+        
+        if collisions:
+            # 发生碰撞，检测打中了几个外星人，每打中10个，增加游戏难度
+            self.stats.aliens_hit += len(collisions)
+            new_level = self.stats.aliens_hit // 10 + 1
+            if new_level > self.stats.level:
+                self.stats.level = new_level
+                self.settings.increase_difficulty()
 
     def _create_alien(self):
         '''满足条件时创建外星人实例, 并加入到编组中'''

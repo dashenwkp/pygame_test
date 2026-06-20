@@ -102,7 +102,7 @@ class SidewayShooter:
 
     def _start_game(self):
         '''开始新游戏'''
-        # 调整游戏设置
+        # 重置游戏元素属性
         self.settings.initialize_dynamic_settings()
 
         # 重置游戏的统计信息

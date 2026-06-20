@@ -11,3 +11,4 @@ class GameStats:
         self.rockets_left = self.settings.rocket_limit
         self.aliens_hit = 0
         self.level = 1
+        self.score = 0

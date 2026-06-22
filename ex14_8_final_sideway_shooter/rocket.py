@@ -1,11 +1,12 @@
 import pygame
-from settings import Settings
+from pygame.sprite import Sprite
 
-class Rocket:
+class Rocket(Sprite):
     '''管理火箭的类'''
 
     def __init__(self, ss_game):
         '''加载火箭并将火箭放到屏幕左边的中间'''
+        super().__init__()
         self.screen = ss_game.screen
         self.settings = ss_game.settings
         self.image = pygame.image.load(

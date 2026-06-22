@@ -16,6 +16,9 @@ class Settings:
         self.speedup_scale = 1.1
         self.frequency_scale = 1.15
 
+        # 外星人分数的提高速度
+        self.score_scale = 1.5
+
         # 默认难度
         self.difficulty = 'medium'
 
@@ -33,10 +36,10 @@ class Settings:
             self.alien_frequency = 0.005
         elif self.difficulty == 'medium':
             self.rocket_limit = 3
-            self.bullets_allowed = 3
-            self.rocket_speed = 1.5
-            self.bullet_speed = 3.0
-            self.alien_speed = 1.0
+            self.bullets_allowed = 3 # 默认值3
+            self.rocket_speed = 1.5 # 默认值1.5
+            self.bullet_speed = 3.0 # 默认值3.0
+            self.alien_speed = 1.0 # 默认值1.0
             self.alien_frequency = 0.01
         elif self.difficulty == 'hard':
             self.rocket_limit = 2
@@ -46,9 +49,14 @@ class Settings:
             self.alien_speed = 2.0
             self.alien_frequency = 0.02
 
+        # 计分设置
+        self.alien_points = 50
+
     def increase_difficulty(self):
         '''增加游戏难度'''
         self.rocket_speed *= self.speedup_scale
         self.bullet_speed *= self.speedup_scale
         self.alien_speed *= self.speedup_scale
         self.alien_frequency *= self.frequency_scale
+
+        self.alien_points = int(self.alien_points * self.score_scale)

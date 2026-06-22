@@ -1,13 +1,17 @@
 import pygame
+
 import sys
+from time import sleep
+from random import random
+from pathlib import Path
+
 from settings import Settings
 from rocket import Rocket
 from bullet import Bullet
 from alien import Alien
-from random import random
-from time import sleep
 from game_stats import GameStats
 from button import Button
+from scoreboard import Scoreboard
 
 class SidewayShooter:
     '''管理游戏资源和行为的类'''
@@ -16,15 +20,20 @@ class SidewayShooter:
         '''初始化游戏并创建游戏资源'''
         pygame.init()
         self.settings = Settings()
+        self.path = Path(r'ex14_8_final_sideway_shooter\high_score.txt')
+        self.contents = self.path.read_text().strip()
         self.screen = pygame.display.set_mode((0, 0), pygame.FULLSCREEN)
         self.settings.screen_width = self.screen.get_rect().width
         self.settings.screen_height = self.screen.get_rect().height
         pygame.display.set_caption('Sideway Shooter')
-        self.stats = GameStats(self)
         self.rocket = Rocket(self)
         self.bullets = pygame.sprite.Group()
         self.aliens = pygame.sprite.Group()
         self.clock = pygame.time.Clock()
+
+        # 创建存储游戏统计信息的实例，并创建记分牌
+        self.stats = GameStats(self)
+        self.sb = Scoreboard(self)
 
         # 表示游戏运行的值
         self.game_active = False
@@ -52,6 +61,7 @@ class SidewayShooter:
         '''监测事件'''
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
+                self._write_high_score()
                 sys.exit()
             elif event.type == pygame.KEYDOWN:
                 self._check_key_down(event)
@@ -61,6 +71,10 @@ class SidewayShooter:
                 mouse_pos = pygame.mouse.get_pos()
                 self._check_play_button(mouse_pos)
                 self._check_difficulty_buttons(mouse_pos)
+
+    def _write_high_score(self):
+        '''将最高分写入文件'''
+        self.path.write_text(str(self.stats.high_score))
     
     def _make_difficulty_button(self):
         '''制作不同难度的按钮'''
@@ -107,6 +121,10 @@ class SidewayShooter:
 
         # 重置游戏的统计信息
         self.stats.reset_stats()
+        self.sb.prep_score()
+        self.sb.prep_level()
+        self.sb.prep_rockets()
+
         self.game_active = True
 
         # 删除子弹和外星人
@@ -128,6 +146,7 @@ class SidewayShooter:
         elif event.key == pygame.K_SPACE:
             self._fire_bullet()
         elif event.key == pygame.K_q:
+            self._write_high_score()
             sys.exit()
         elif event.key == pygame.K_p:
             self._start_game()
@@ -169,7 +188,9 @@ class SidewayShooter:
     def _rocket_hit(self):
         '''火箭被撞后，如果还有剩余火箭，继续游戏，如果没有了就停止游戏'''
         if self.stats.rockets_left > 0:
+            # 将rockets_left减一并更新记分牌
             self.stats.rockets_left -= 1
+            self.sb.prep_rockets()
             self.bullets.empty()
             self.aliens.empty()
             sleep(0.5)
@@ -192,12 +213,23 @@ class SidewayShooter:
             self.bullets, self.aliens, True, True)
         
         if collisions:
-            # 发生碰撞，检测打中了几个外星人，每打中10个，增加游戏难度
-            self.stats.aliens_hit += len(collisions)
-            new_level = self.stats.aliens_hit // 10 + 1
-            if new_level > self.stats.level:
-                self.stats.level = new_level
-                self.settings.increase_difficulty()
+            # 发生碰撞，增加分数
+            for aliens in collisions.values():
+                self.stats.score += self.settings.alien_points * len(aliens)
+            self.sb.prep_score()
+            self.sb.check_high_score()
+
+            # 发生碰撞，检测打中了几个外星人，每打中10个，增加游戏难度和玩家等级
+            self._start_new_level(collisions)
+    
+    def _start_new_level(self, collisions):
+        '''检测打中了几个外星人，每打中10个，增加游戏难度和玩家等级'''
+        self.stats.aliens_hit += len(collisions)
+        new_level = self.stats.aliens_hit // 10 + 1
+        if new_level > self.stats.level:
+            self.stats.level = new_level
+            self.sb.prep_level()
+            self.settings.increase_difficulty()
 
     def _create_alien(self):
         '''满足条件时创建外星人实例, 并加入到编组中'''
@@ -216,6 +248,9 @@ class SidewayShooter:
 
         # 绘制外星人
         self.aliens.draw(self.screen)
+
+        # 显示得分
+        self.sb.show_score()
 
         # 如果游戏处于非活动状态，就绘制play按钮和难度按钮
         if not self.game_active:

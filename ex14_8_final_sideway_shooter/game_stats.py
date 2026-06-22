@@ -4,6 +4,11 @@ class GameStats:
     def __init__(self, ss_game):
         '''初始化统计信息'''
         self.settings = ss_game.settings
+
+        # 在任何情况下都不应重置最高分
+        self.contents = ss_game.contents
+        self.high_score = int(self.contents)
+
         self.reset_stats()
 
     def reset_stats(self):
